@@ -1,0 +1,9 @@
+pandas
+django
+numpy
+djangorestframework
+pysqlite3
+sqlalchemy
+UPath
+requests
+UPath

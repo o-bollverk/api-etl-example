@@ -36,5 +36,5 @@ def main():
     
     # Check output 
     
-    fact_table_counts(db_engine)
+    severity_counts(db_engine)
     

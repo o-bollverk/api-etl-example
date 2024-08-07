@@ -10,26 +10,24 @@ import datetime
 import pymysql
 import re
 
-from sqlalchemy import create_engine, text
-from sqlalchemy.exc import OperationalError, SQLAlchemyError
-
-from sqlalchemy.orm import declarative_base
-from sqlalchemy import MetaData
 from pandas.api.types import is_datetime64_any_dtype as is_datetime
 
-from sqlalchemy import Table, Column, Integer, String
 from sqlalchemy import *
+# from sqlalchemy import Table, Column, Integer, String, create_engine
+#from sqlalchemy import func
+#from sqlalchemy import create_engine, text, MetaData
+
+from sqlalchemy.dialects.mysql import insert
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.exc import OperationalError, SQLAlchemyError
 
 from src.constants.db_constants import db_connection_str, dbname, CvesSeverity
 from src.constants.db_constants import Base, CvesSeverity, CvesScores, CvesAttackVectors, CvesFact
 from src.utils.utils import get_todays_data_dir, get_previous_data_dir
 from src.constants.paths import CVE_PARQUET_PATH, CVE_JSON_PATH
 
-from sqlalchemy import create_engine, Column, Integer, String
-from sqlalchemy.dialects.mysql import insert
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy import func
+
 
 
 def init_db(db_engine: sqlalchemy.engine) -> None:
@@ -38,7 +36,7 @@ def init_db(db_engine: sqlalchemy.engine) -> None:
             text("CREATE DATABASE IF NOT EXISTS nist_analytics")
         )
         conn.execute(
-            text("USE nist_analytics")
+            text("USE nist_analytics") # TODO dbname
         )
         conn.close()
 
@@ -251,8 +249,6 @@ def delete_directory_for_day_before_yesterday() -> None:
 #         data_iter = df.iterrows()
 #         data = [dict(zip(keys, row)) for row in data_iter]
         
-#         #print(data)
-#         #print(metadata)
 #         #exit()
         
 #         stmt = insert(table).values(data)
@@ -304,30 +300,8 @@ def all_data_types_are_as_expected(df):
         return False
 
 
-# def get_severity_level_counts_from_db(db_engine: sqlalchemy.engine) -> pd.DataFrame:
-
-#     # Create an engine and session
-#     #engine = create_engine('sqlite:///example.db')  # replace with your database URL
-    
-#     Session = sessionmaker(bind=db_engine)
-#     session = Session()
-
-#     # Perform GROUP BY and COUNT using SQLAlchemy ORM
-#     result = session.query(CvesSeverity.severity, 
-#                            func.count(CvesSeverity.cve_id)).group_by(CvesSeverity.severity).all()
-
-#     for severity, count in result:
-#         print(f"{severity}: {count}")
-
-#     # Close the session
-#     session.close()
-
-
 def get_severity_level_counts_from_db(db_engine: sqlalchemy.engine) -> pd.DataFrame:
 
-    # Create an engine and session
-    #engine = create_engine('sqlite:///example.db')  # replace with your database URL
-    
     Session = sessionmaker(bind=db_engine)
     session = Session()
 
@@ -335,8 +309,6 @@ def get_severity_level_counts_from_db(db_engine: sqlalchemy.engine) -> pd.DataFr
     result = session.query(CvesSeverity.severity, 
                            func.count(CvesSeverity.id)).group_by(CvesSeverity.severity).all()
 
-    print("RESULT")
-    print(result)
     
     for severity, count in result:
         print(f"{severity}: {count}")
@@ -345,30 +317,16 @@ def get_severity_level_counts_from_db(db_engine: sqlalchemy.engine) -> pd.DataFr
     session.close()
 
 
-def fact_table_counts(db_engine: sqlalchemy.engine) -> pd.DataFrame:
+def severity_counts(db_engine: sqlalchemy.engine) -> pd.DataFrame:
 
-    # Create an engine and session
-    #engine = create_engine('sqlite:///example.db')  # replace with your database URL
-    
     Session = sessionmaker(bind=db_engine)
     session = Session()
-
-    # Perform GROUP BY and COUNT using SQLAlchemy ORM
-   #result = session.query(CvesFact.cves_severity, 
-   # #                       func.count(CvesSeverity.cve_id)).group_by(CvesFact.cves_severity).all()
-    
-    # make this a join and group by
-    # result = session.query(CvesSeverity.severity, 
-    #                        func.count(CvesSeverity.cve_id)).group_by(CvesSeverity.severity 
-    #                         ).join(CvesFact, CvesFact.cve_id == CvesSeverity.cve_id).all()
 
     result = session.query(
                            CvesSeverity.severity, 
                            func.count(CvesSeverity.cve_id)).group_by(CvesSeverity.severity).all()
    
-   
-    print("RESULT")
-    print(result)
+
     
     for severity, count in result:
         print(f"{severity}: {count}")
@@ -441,12 +399,8 @@ if __name__ == "__main__":
     load_scores_to_db(CVE_PARQUET_PATH, db_engine)
     load_severity_types_to_db(CVE_PARQUET_PATH, db_engine)
     load_attack_vectors_to_db(CVE_PARQUET_PATH, db_engine)
-    
-    #severity_types_df.to_sql("cves_severity", db_engine, if_exists="replace", index=False)
-    
-    print("Data uploaded successfully")
-    
-    fact_table_counts(db_engine)
+        
+    severity_counts(db_engine)
 
     # get_severity_level_counts_from_db(db_engine)
     

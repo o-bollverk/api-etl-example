@@ -14,4 +14,5 @@ Code structure wise:
 - src/load: functions for setting up DB, loading parquet files to it, doing some basic queries with sqlalchemy
 - src/utils: functions for handling dates, current project path
 - cve_api: a directory and filestructure corresponding to a Django app. Contains models.py, views.py, urls.py, etc. Defines the types of queries supported by API, the links by which the results are accessible.
+- main.py: does all steps required to have data in DB.
 

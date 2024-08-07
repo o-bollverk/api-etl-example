@@ -1,8 +1,4 @@
-
-#import paths
-
 from src.utils.utils import get_todays_data_dir
-import datetime
 import pandas as pd
 import path
 

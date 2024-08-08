@@ -1,6 +1,6 @@
 from src.extract.nvd_api import get_all_cves_with_start_date, get_all_cves_by_severity_rating
 from src.load.db_upload import *
-
+from src.constants.paths import CVE_JSON_PATH, CVE_PARQUET_PATH
 
 def main():
     

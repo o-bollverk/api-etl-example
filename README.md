@@ -192,20 +192,30 @@ The cve_id_str is the standard cve_id as an integer representation.
 The cve_id field is the inner cve_id that is used in the database for faster quering (integer key)
 The description is a truncated description to 500 characters of the corresponding vulnerability.
 
-2) Get the count of all cve_ids per severity level: http://127.0.0.1:8000/custom_api/cves/severity_aggregation/
-This endpoint supports setting a minimum date to consider for aggregation. By default, aggregation is provided by date_modified and severity level. 
+All of the following endpoints support setting a minimum date to consider for aggregation.
+
+2) Get the count of all cve_ids per severity level: http://127.0.0.1:8000/custom_api/severity/ 
+By default, aggregation is provided by date_modified and severity level. 
 Since rows are appended to the database, the date modified parameter will enable to provide the aggregation values at a given date.
 
-http://127.0.0.1:8000/custom_api/cves/severity_aggregation/?min_date=2023-05-01
+http://127.0.0.1:8000/custom_api/cves/severity/?min_date=2023-05-01
 
 For instance, if a the cve CVE-2017-1000378 is considered "LOW" with a date modified of 2023-10-01, but then is updated to be "HIGH" on 2024-11-01,
 the aggregation will provide the aggregates to reflect the distribution as of both dates, and can therefore be used to get historical metrics. 
 
-3) Get the cve_ids with top 10 impact scores: http://127.0.0.1:8000/custom_api/cves/impact_aggregation/
-This endpoint supports setting a minimum date to consider for aggregation.
+3) Get the cve_ids with top 10 impact scores: http://127.0.0.1:8000/custom_api/cves/impact/ 
 
-4) Get the cve_ids with top 10 exploitability scores http://127.0.0.1:8000/custom_api/cves/expl_aggregation/
-This endpoint supports setting a minimum date to consider for aggregation.
+The top output might look something like this:
+```python
+    {
+        "cveseverity__last_modified": "2023-11-07",
+        "cveseverity__severity": "HIGH",
+        "severity_count": 163
+    },
+```
 
-5) Get top 10 attack vectors used http://127.0.0.1:8000/custom_api/cves/attack_vector_aggregation/
-This endpoint supports setting a minimum date to consider for aggregation.
+Followed by all combinations of severity levels and last_modified values.
+
+4) Get the cve_ids with top 10 exploitability scores http://127.0.0.1:8000/custom_api/cves/expl/ 
+
+5) Get top 10 attack vectors used http://127.0.0.1:8000/custom_api/cves/attackvec/ 

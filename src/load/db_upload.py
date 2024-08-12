@@ -68,6 +68,7 @@ def convert_json_to_parquet() -> None:
     # TODO limit lenght to higher?
     description_series = description_series.str.slice(0, 499)
     
+    # Variable extraction according to the format provided by NIST API
     severity_series = df.apply(lambda x: x["vulnerabilities"]["cve"]["metrics"]['cvssMetricV31'][0]["cvssData"]["baseSeverity"] 
                                                if x["has_v3"] else 
                                                x["vulnerabilities"]["cve"]["metrics"]['cvssMetricV2'][0]["baseSeverity"], axis = 1)

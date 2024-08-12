@@ -12,12 +12,10 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import pymysql
+from src.constants.db_constants import dbname, db_user
 
 pymysql.install_as_MySQLdb() # TODO check if needed
 
-# SET DBNAME HERE
-# TODO replicate
-dbname = "nist_analytics"
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -93,8 +91,8 @@ DATABASES = {
     'cve_db': {
         "ENGINE": "django.db.backends.mysql",
         "NAME": dbname,
-        "USER": "root",
-        "PASSWORD": "",
+        "USER": db_user,
+        "PASSWORD": "", # TODO set to file or to constant of db password
         "HOST": "localhost"#,
         #"PORT": "5432",
     }
